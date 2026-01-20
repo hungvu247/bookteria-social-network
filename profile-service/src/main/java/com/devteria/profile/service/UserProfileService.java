@@ -9,7 +9,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -34,5 +37,10 @@ public class UserProfileService {
         UserProfile userProfile = userProfileRepository.findById(id).orElseThrow(() -> new RuntimeException("UserProfile not found"));
         return userProfileMapper.toProfileResponseDto(userProfile);
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<ProfileResponseDto> getAllProfiles() {
+        var profiles = userProfileRepository.findAll();
 
+        return profiles.stream().map(userProfileMapper::toProfileResponseDto).toList();
+    }
 }
